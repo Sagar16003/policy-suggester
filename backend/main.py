@@ -27,6 +27,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+def home():
+    return {"status": "ok", "message": "Policy Suggester Backend is Running"}
+
 # Using models discovered via check_models.py (Prioritizing Standard models for better output quality)
 MODEL_CANDIDATES = [
     "gemini-2.0-flash-exp",
