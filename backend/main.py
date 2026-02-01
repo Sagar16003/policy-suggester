@@ -194,7 +194,12 @@ async def extract_policy(file: UploadFile = File(...)):
         """
         try:
             response = await generate_content_with_fallback(client, [prompt, types.Part.from_bytes(data=content, mime_type=file.content_type)], temperature=0.0)
-            
+        except Exception as api_err:
+             print(f"AI Generation Error: {api_err}")
+             # Pass the actual API error to the client for debugging
+             raise HTTPException(status_code=500, detail=f"AI Service Error: {str(api_err)}")
+
+        try:
             # clean json
             text = response.text.strip()
             if "```json" in text:
@@ -303,8 +308,8 @@ async def extract_policy(file: UploadFile = File(...)):
             return data
 
         except Exception as e:
-            print(f"JSON Parse Error: {e}")
-            raise HTTPException(status_code=500, detail="Failed to parse AI response. Please try again.")
+            print(f"JSON Parse/Processing Error: {e}")
+            raise HTTPException(status_code=500, detail=f"Failed to parse AI response: {str(e)}")
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
